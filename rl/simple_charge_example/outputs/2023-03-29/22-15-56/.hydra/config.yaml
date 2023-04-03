@@ -1,0 +1,4 @@
+battery_volume: 150
+power_boundary: 10000
+power_boundary_decrease_point: 0.8
+resistance: 1

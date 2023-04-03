@@ -1,0 +1,8 @@
+battery_volume: 60000
+Batch_size: 32
+Lr: 0.01
+Epsilon: 0.9
+Gamma: 0.9
+Target_replace_iter: 100
+Memory_capacity: 100
+emission_max_value: 100

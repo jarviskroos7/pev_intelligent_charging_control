@@ -1,0 +1,4 @@
+battery_volume: 60 * 1000 / 400
+power_boundary: 10 * 1000
+power_boundary_decrease_point: 0.8
+resistance: 1

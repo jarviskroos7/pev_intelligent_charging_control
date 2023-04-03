@@ -1,0 +1,36 @@
+
+
+
+Batch_size = 64
+Lr = 0.0001
+Epsilon = 0.999  # greedy policy
+Gamma = 1  # reward discount
+Target_replace_iter = 50   # target update frequency
+Memory_capacity = 10000
+episode_num = 3000
+epsilion_increase_value = (1-Epsilon)/episode_num
+emission_max_value = 100
+
+
+Batch_size : 64
+Lr : 0.0001
+Epsilon : 0.999  # greedy policy
+Gamma : 1  # reward discount
+Target_replace_iter : 50   # target update frequency
+Memory_capacity : 10000
+emission_max_value : 100
+episode_num: 3000
+epsilion_increase_value: (1-${Epsilon})/${episode_num}
+resistance: 1
+voltage: 400
+
+#data:
+#  path: /path/to/data
+#  batch_size: 32
+#model:
+#  type: MLP
+#  num_layers: 2
+#  hidden_size: 64
+#optimizer:
+#  type: Adam
+#  lr: 0.001
