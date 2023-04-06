@@ -36,13 +36,7 @@ class cell_2170():
         """
         self.init_V = initial_voltage
 
-        # init for the following methods
-        self.total_capacity = None
-        self.partial_capacity = None
-        self.sim_charge = None
-        self.sim_cali = None
-
-    def find_capacity(self):
+        # calibrate to find the <total capacity> and <partial capacity> and <capacity offset>
         experiment_cali = pybamm.Experiment(
             [
                 "Discharge at 0.5 C until " + str(self.cut_off_lower) + " V",
@@ -53,43 +47,76 @@ class cell_2170():
         self.sim_cali = pybamm.Simulation(self.model, experiment=experiment_cali, parameter_values=self.param)
         self.sim_cali.solve()
 
+        """
+        cali as calibration.
+        To calculate the total capacity and other relevant info
+        """
         solution = self.sim_cali.solution
+        cali_discharge_capacity_array = solution["Discharge capacity [A.h]"].data
 
-        dcap = solution["Discharge capacity [A.h]"].data
-        V = solution['Terminal voltage [V]'].data
+        # for SOC calculation and true capacity calculation during charge and discharge
+        self.total_capacity = max(cali_discharge_capacity_array) - min(cali_discharge_capacity_array)
+        self.partial_capacity = max(cali_discharge_capacity_array)
+        self.cap_offset = - min(cali_discharge_capacity_array)
 
-        self.total_capacity = max(dcap) - min(dcap)
-        self.partial_capacity = max(dcap)
+        # for record keeping and plotting of voltage vs capacity
+        self.cali_capacity_array = self.total_capacity - self.cap_offset - cali_discharge_capacity_array
+        self.cali_v_array = solution['Terminal voltage [V]'].data
 
-        return self.total_capacity, self.partial_capacity, dcap, V
+    def discharge_n_charge(self, elec_constraint, charging_current_or_power, end_constraint, duration_or_endV):
+        """
+        All the cell charging and discharging processes use this method.
+        :param elec_constraint: "current" or "power"
+        :param charging_current_or_power: a number in A or W
+        :param end_constraint:  "duration" or "endV"
+        :param duration_or_endV: a number in minutes or V
+        :return:
+        capacity_array: capacity records within the time step above (probably only the last element of array is needed)
+        v_array: terminal voltage records within the time step above (probably only the last element of array is needed)
+        """
 
-    def charge_cell(self, charging_current, duration):
+        if elec_constraint == "current":
+            experiment_statement_2 = "Charge at " + str(charging_current_or_power) + " A"
+        elif elec_constraint == "power":
+            experiment_statement_2 = "Charge at " + str(charging_current_or_power) + " W"
+
+        if end_constraint == "duration" or "time":
+            experiment_statement_2 += " for " + str(duration_or_endV) + " minutes"
+        elif end_constraint == "voltage":
+            experiment_statement_2 += " until " + str(duration_or_endV) + " V"
+
         experiment = pybamm.Experiment(
             [
                 # discharge the battery cell until it reaches the initial Voltage condition (SOC condition) needed
-                "Discharge at 2C until " + str(self.init_V) + " V",
-                "Charge at " + str(charging_current) + " A for " + str(duration) + " minutes"
+                # 0.5 C = 0.5 * nominal capacity per hour = 2 Amp
+                "Discharge at 0.5 C until " + str(self.init_V) + " V",
+                experiment_statement_2
             ] * 1
         )
 
-        self.sim_charge = pybamm.Simulation(self.model, experiment=experiment, parameter_values=self.param)
-        self.sim_charge.solve()
+        model = pybamm.lithium_ion.SPM()
 
-        solution = self.sim_charge.solution
-        ending_disch_cap = solution["Discharge capacity [A.h]"].data[-1]
-        ending_v = solution['Terminal voltage [V]'].data[-1]
+        self.sim_charge_n_discharge = pybamm.Simulation(model, experiment=experiment, parameter_values=self.param)
+        self.sim_charge_n_discharge.solve()
 
-        total_cap, _, _, _ = self.find_capacity()
+        solution = self.sim_charge_n_discharge.solution
+        # note that discharge_capacity_array is how much capacity is "DISCHARGED"
+        discharge_capacity_array = solution["Discharge capacity [A.h]"].data
+        v_array = solution['Terminal voltage [V]'].data
 
-        ending_soc = (total_cap - ending_disch_cap) / total_cap
+        capacity_status_array = self.total_capacity - self.cap_offset - discharge_capacity_array
 
-        return ending_soc, ending_v
+        return capacity_status_array, v_array
 
 
 if __name__ == '__main__':
     cell_model = cell_2170()
-    v_after_charge, cap_after_charge = cell_model.charge_cell(0.5, 60)
-    print(v_after_charge, cap_after_charge)
+    print("Total capacity counts from upper cut-off voltage to lower cut-off voltage:", cell_model.total_capacity)
+    print("Partial capacity counts from default initial voltage to lower cut-off voltage:", cell_model.partial_capacity)
+
+    experiment_cap_array, experiment_v_array = cell_model.discharge_n_charge("current", 0.5, "duration", 60)
+    print(experiment_cap_array)
+    print(experiment_v_array)
 
     output_variables = [
         "Terminal voltage [V]",
@@ -99,14 +126,11 @@ if __name__ == '__main__':
         # "Positive particle surface concentration [mol.m-3]",
         "Discharge capacity [A.h]"
     ]
-
-    cell_model.sim_charge.plot(output_variables)
-
-    # total capacity counts from
-    total_capacity, partial_capacity, dcap, V = cell_model.find_capacity()
-    print("Total capacity counts from upper cut-off voltage to lower cut-off voltage = ", total_capacity)
-    print("Partial capacity counts from default initial voltage to lower cut-off voltage = ", partial_capacity)
+    cell_model.sim_charge_n_discharge.plot(output_variables)
 
     fig, ax = plt.subplots()
-    ax.plot(dcap, V)
+    ax.plot(cell_model.cali_capacity_array, cell_model.cali_v_array)
+    ax.set_title("Voltage vs Capacity curve during calibration")
+    ax.set_xlabel("Capacity (Ah)")
+    ax.set_ylabel("Terminal Voltage (V)")
     plt.show()
