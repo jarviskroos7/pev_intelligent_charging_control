@@ -5,8 +5,10 @@ import matplotlib.pyplot as plt
 class cell_2170():
     # nom_cap = 4.8  # Ah
     # Nom_vol = 3.6  # V
-    cut_off_lower = 3.1  # V
+    cut_off_lower = 2.6  # V
     cut_off_upper = 4.1  # V
+
+    holding_voltage = 3.9  # V
 
     model = pybamm.lithium_ion.SPM()
     param = model.default_parameter_values
@@ -14,7 +16,7 @@ class cell_2170():
     # Change width or height to change capacity
     # since original nominal capacity is 0.680616, use / 0.680616 * 3.9 to change to capacity of around 4 Ah
     # by default 0.207
-    param['Electrode width [m]'] = 0.207 / 0.680616 * 3.9
+    param['Electrode width [m]'] = 0.207 / 0.680616 * 4
 
     # Cut-off voltage
     # 2170 cell has lower bound of 2.5 volts, and upper bound of 4.2 volts
@@ -39,8 +41,11 @@ class cell_2170():
         # calibrate to find the <total capacity> and <partial capacity> and <capacity offset>
         experiment_cali = pybamm.Experiment(
             [
-                "Discharge at 0.5 C until " + str(self.cut_off_lower) + " V",
-                "Charge at 0.5 C until " + str(self.cut_off_upper) + " V"
+                "Discharge at 1.16 A until " + str(self.cut_off_lower) + " V",
+                "Rest for 30 minutes",
+                "Charge at 0.58 A until " + str(self.holding_voltage) + " V",
+                "Hold at " + str(self.holding_voltage) + " V until 0 A",
+                "Rest for 30 minutes"
             ] * 2
         )
 
@@ -62,6 +67,7 @@ class cell_2170():
         # for record keeping and plotting of voltage vs capacity
         self.cali_capacity_array = self.total_capacity - self.cap_offset - cali_discharge_capacity_array
         self.cali_v_array = solution['Terminal voltage [V]'].data
+        self.cali_i_array = solution['Current [A]'].data
 
     def discharge_n_charge(self, elec_constraint, charging_current_or_power, end_constraint, duration_or_endV):
         """
@@ -103,10 +109,11 @@ class cell_2170():
         # note that discharge_capacity_array is how much capacity is "DISCHARGED"
         discharge_capacity_array = solution["Discharge capacity [A.h]"].data
         v_array = solution['Terminal voltage [V]'].data
+        i_array = solution['Current [A]'].data
 
         capacity_status_array = self.total_capacity - self.cap_offset - discharge_capacity_array
 
-        return capacity_status_array, v_array
+        return capacity_status_array, v_array, i_array
 
 
 if __name__ == '__main__':
@@ -114,9 +121,9 @@ if __name__ == '__main__':
     print("Total capacity counts from upper cut-off voltage to lower cut-off voltage:", cell_model.total_capacity)
     print("Partial capacity counts from default initial voltage to lower cut-off voltage:", cell_model.partial_capacity)
 
-    experiment_cap_array, experiment_v_array = cell_model.discharge_n_charge("current", 0.5, "duration", 60)
-    print(experiment_cap_array)
-    print(experiment_v_array)
+    experiment_cap_array, experiment_v_array, experiment_i_array = cell_model.discharge_n_charge("current", 0.5, "duration", 60)
+    # print(experiment_cap_array)
+    # print(experiment_v_array)
 
     output_variables = [
         "Terminal voltage [V]",
