@@ -46,6 +46,19 @@ class Navie_charing_agent(Basic_charging_agent):
 
 
 
+
+'''
+    modify_emission_array:
+        example:
+            n = Navie_charing_agent()
+            maximum_steps = 576
+            x = np.linspace(0, int(maximum_steps / 2), int(maximum_steps / 2) + 1)
+            emission_array = 1 / ((maximum_steps / 2 / 2) ** 2) * (x - (maximum_steps / 2 / 2)) ** 2
+            emission_array = np.concatenate((emission_array[:-1], emission_array[:-1]), axis=0)
+            n.modify_emission_array(emission_array)
+'''
+
+
 # n = Navie_charing_agent()
 # print(n.get_total_emission_value(144, 288, 0.216, 0.99))
 

@@ -25,3 +25,8 @@ class Basic_charging_agent():
         self.Power_limit = min(self.Power, power_limit_1)
         return self.Power_limit
         # return min(self.Power, power_limit_1)
+
+    def modify_emission_array(self, new_emission_array):
+        if (new_emission_array.shape != self.emission_array.shape):
+            raise Exception("new_emission_array has the wrong shape, the shape should be %s"%str(self.emission_array.shape))
+        self.emission_array = new_emission_array

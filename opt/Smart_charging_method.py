@@ -10,7 +10,7 @@ class Smart_charing_agent(Basic_charging_agent):
         super().__init__()
 
     def check_validation(self,start_time, end_time, start_soc, end_soc):
-        target_charge_volumn = (end_soc - start_soc) * battery_volumn
+        target_charge_volumn = (end_soc - start_soc) * self.battery_volumn
         if target_charge_volumn > self.I_max * (end_time - start_time)*self.step:
             return False
         return True
@@ -58,8 +58,13 @@ class Smart_charing_agent(Basic_charging_agent):
         # print(np.count_nonzero(P_values))
         return emission_volume
 
+
+
 # s = Smart_charing_agent()
-# print(s.get_total_emission_value(144, 288, 0.216, 0.99))
+# print(s.get_total_emission_value(144, 144+287, 0.2, 0.7))
+#
+# s = Smart_charing_agent()
+# print(s.get_total_emission_value(260, 320, 0.4, 0.7))
 
 # s = Smart_charing_agent()
 # print(s.get_total_emission_value(225, 253, 0.891, 0.98))
