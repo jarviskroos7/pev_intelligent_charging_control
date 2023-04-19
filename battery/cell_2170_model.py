@@ -41,9 +41,9 @@ class cell_2170():
         # calibrate to find the <total capacity> and <partial capacity> and <capacity offset>
         experiment_cali = pybamm.Experiment(
             [
-                "Discharge at 1.16 A until " + str(self.cut_off_lower) + " V",
+                "Discharge at 0.6521739 A until " + str(self.cut_off_lower) + " V",     # 9600/320/46 = 0.6521739
                 "Rest for 30 minutes",
-                "Charge at 0.58 A until " + str(self.holding_voltage) + " V",
+                "Charge at 0.869565 A until " + str(self.holding_voltage) + " V",       # 40/46 = 0.869565
                 "Hold at " + str(self.holding_voltage) + " V until 0 A",
                 "Rest for 30 minutes"
             ] * 2
