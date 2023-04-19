@@ -43,7 +43,7 @@ class cell_2170():
             [
                 "Discharge at 1.16 A until " + str(self.cut_off_lower) + " V",
                 "Rest for 30 minutes",
-                "Charge at 0.58 A until " + str(self.holding_voltage) + " V",
+                "Charge at 0.869565 A until " + str(self.holding_voltage) + " V",      # 40/46 = 0.869565
                 "Hold at " + str(self.holding_voltage) + " V until 0 A",
                 "Rest for 30 minutes"
             ] * 2
