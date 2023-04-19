@@ -1,7 +1,7 @@
 # data
 
 ## Residential Charging Data
-Residential electric vehicle charging datasets from apartment buildings
+Residential electric vehicle charging datasets from apartment buildings\
 Source: https://www.sciencedirect.com/science/article/pii/S2352340921003899
 
 ### Data Engineering
