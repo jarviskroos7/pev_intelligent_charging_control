@@ -20,6 +20,14 @@ class Basic_charging_agent():
         emission_array = self.emission_max_value / ((self.maximum_steps / 2 / 2) ** 2) * (x - (self.maximum_steps / 2 / 2)) ** 2
         self.emission_array = np.concatenate((emission_array[:-1], emission_array[:-1]), axis=0)
 
+        winter_emission_data = pd.read_csv("pred_feb.csv")
+        winter_emission_array = np.array(winter_emission_data['pred'].to_list())
+        self.winter_emission_array = np.concatenate((winter_emission_array,winter_emission_array), axis=0)
+
+        summer_emission_data = pd.read_csv("pred_may.csv")
+        summer_emission_array = np.array(summer_emission_data['pred'].to_list())
+        self.summer_emission_array = np.concatenate((summer_emission_array, summer_emission_array), axis=0)
+
     def get_power_limit(self,soc):
         power_limit_1 = self.Power_limit_slope_line_Intercept*(1- soc)
         self.Power_limit = min(self.Power, power_limit_1)
