@@ -5,34 +5,47 @@ import pandas as pd
 from Basic_charging_agent import Basic_charging_agent
 
 
-class Smart_charing_agent(Basic_charging_agent):
+class Back_to_grid_charing_agent(Basic_charging_agent):
     def __init__(self):
         super().__init__()
 
-    def check_validation(self, start_time, end_time, start_soc, end_soc):
+    def check_validation(self,start_time, end_time, start_soc, end_soc):
         target_charge_volumn = (end_soc - start_soc) * self.battery_volumn
         if target_charge_volumn > self.I_max * (end_time - start_time)*self.step:
             return False
         return True
 
-    def get_total_emission_value(self, start_time, end_time, start_soc, end_soc, season):
+    def get_total_emission_value(self, start_time, end_time, start_soc, end_soc):
 
         target_charge_volumn = (end_soc - start_soc) * self.battery_volumn
         current_state = cp.Variable(self.maximum_steps, 'current at each step')
         P = cp.Variable(self.maximum_steps, 'power of the charger at each step')
         soc = cp.Variable(self.maximum_steps, "state of charge")
         voltage = cp.Variable(self.maximum_steps, "voltage")
-        if season == "summer":
-            objective = cp.Minimize(cp.sum(P * self.summer_emission_array))
-        if season == "winter":
-            objective = cp.Minimize(cp.sum(P * self.summer_emission_array))
+        P_discount = cp.Variable(self.maximum_steps, 'power of the charger at each step discounted')
+        # objective = cp.Minimize(cp.sum(cp.pos(P)*self.emission_array) - cp.sum(cp.neg(P)*self.emission_array))
+        # positive_sum = cp.sum(cp.pos(P) * self.emission_array)
+        # negative_sum = cp.sum(cp.neg(P) * self.emission_array)
+        # objective = cp.Minimize(positive_sum + 0.85*negative_sum)
+        # emission_multiplier = cp.maximum(1.25, cp.neg(P))
+        # emission_values = self.emission_array * emission_multiplier
+
+        # objective = cp.Minimize(cp.sum(P * self.emission_array))
         constraints = []
+
+        constraints = [
+            P_discount == cp.multiply(cp.pos(P), 1),
+            P_discount + cp.multiply(cp.neg(cp.pos(P)), 0.8) == cp.multiply(cp.neg(cp.neg(P)), 0.8)
+        ]
 
         for i in range(0, self.maximum_steps):
             constraints += [voltage[i] == 400]
 
+        # for i in range(0, self.maximum_steps):
+        #     constraints += [P[i] == 2 * self.R * current_state[i] + 400 * current_state[i]]
+
         for i in range(0, self.maximum_steps):
-            constraints += [P[i] == 2 * self.R * current_state[i] + 400 * current_state[i]]
+            constraints += [P[i] == 400 * current_state[i]]
 
         for i in range(start_time):
             constraints += [current_state[i] == 0]
@@ -59,14 +72,12 @@ class Smart_charing_agent(Basic_charging_agent):
         P_values = P.value
         P_values = [value if value >= 1 else 0 for value in P_values]
         # print(np.count_nonzero(P_values))
-        return emission_volume, P_values
+        return emission_volume
 
 
 
-# s = Smart_charing_agent()
-# emission_volume, P_values = s.get_total_emission_value(144, 144+287, 0.2, 0.7)
-# print(len(P_values))
-# print(s.get_total_emission_value(144, 144+287, 0.2, 0.7))
+s = Back_to_grid_charing_agent()
+print(s.get_total_emission_value(144, 144+287, 0.2, 0.7))
 #
 # s = Smart_charing_agent()
 # print(s.get_total_emission_value(260, 320, 0.4, 0.7))

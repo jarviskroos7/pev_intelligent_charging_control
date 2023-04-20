@@ -14,13 +14,16 @@ class Navie_charing_agent(Basic_charging_agent):
             return False
         return True
 
-    def get_total_emission_value(self, start_time, end_time, start_soc, end_soc):
+    def get_total_emission_value(self, start_time, end_time, start_soc, end_soc,season):
         validation = self.check_validation(start_time, end_time, start_soc, end_soc)
         if not validation:
             return -1
         emission_volume = 0
         current_soc = start_soc
         current_time = start_time
+        charging_history = []
+        for i in range(self.maximum_steps):
+            charging_history.append(0)
         while current_soc < end_soc and current_time < end_time:
             power_limit = self.get_power_limit(current_soc)
 
@@ -34,14 +37,18 @@ class Navie_charing_agent(Basic_charging_agent):
 
             temp_power = current * self.voltage + current**2*self.R
             current_soc += current * self.step / self.battery_volumn
-            emission_volume += temp_power * self.emission_array[current_time]
+            if season == "summer":
+                emission_volume += temp_power * self.summer_emission_array[current_time]
+            if season == "winter":
+                emission_volume += temp_power * self.winter_emission_array[current_time]
             # print(temp_power* self.emission_array[current_time])
             # print(self.Power)
+            charging_history[current_time] = temp_power
             current_time += 1
         # print(current_time)
         # print(current_soc)
         # print(emission_volume - self.Power * self.emission_array[current_time])
-        return emission_volume
+        return emission_volume, charging_history
 
 
 
