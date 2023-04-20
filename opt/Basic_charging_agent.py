@@ -6,7 +6,7 @@ import pandas as pd
 class Basic_charging_agent():
     def __init__(self):
         self.voltage = 240  # nominal_voltage
-        self.battery_volumn = 60 * 1000 / 400  # Q = kWh / v
+        self.battery_volumn = 60 * 1000 / self.voltage  # Q = kWh / v
         self.emission_max_value = 100
         self.Power = 9.6 * 1000  # power of the charger
         self.I_max = self.Power / self.voltage
@@ -39,5 +39,5 @@ class Basic_charging_agent():
             raise Exception("new_emission_array has the wrong shape, the shape should be %s"%str(self.emission_array.shape))
         self.emission_array = new_emission_array
 
-    def set_Resistance(self,resistance):
+    def set_Resistance(self, resistance):
         self.R = resistance
