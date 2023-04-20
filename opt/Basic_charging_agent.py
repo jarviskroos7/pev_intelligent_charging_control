@@ -38,3 +38,6 @@ class Basic_charging_agent():
         if (new_emission_array.shape != self.emission_array.shape):
             raise Exception("new_emission_array has the wrong shape, the shape should be %s"%str(self.emission_array.shape))
         self.emission_array = new_emission_array
+
+    def set_Resistance(self,resistance):
+        self.R = resistance
