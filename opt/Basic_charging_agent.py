@@ -5,12 +5,12 @@ import pandas as pd
 
 class Basic_charging_agent():
     def __init__(self):
-        self.voltage = 400  # nominal_voltage
+        self.voltage = 240  # nominal_voltage
         self.battery_volumn = 60 * 1000 / 400  # Q = kWh / v
         self.emission_max_value = 100
-        self.Power = 10 * 1000  # power of the charger
+        self.Power = 9.6 * 1000  # power of the charger
         self.I_max = self.Power / self.voltage
-        self.R = 0.0001  # resistance
+        self.R = 0.00001  # resistance
         self.Power_limit = 10 * 1000  # simple assumption to the limit of the power: 100 kw
         self.Power_limit_slope_line_Intercept = 50 * 1000  # simple assumption to the limit of the power(the sloped line): 100 kw
         self.action_interval = 5
