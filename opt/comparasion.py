@@ -30,7 +30,7 @@ month_dict = {
     'Dec': 12
 }
 
-for i in range(1000):
+for i in range(len(data)):
     start_soc = data.loc[i, "start_soc"]
     # end_soc = data.loc[i, "end_soc"]
     end_soc = 0.95
