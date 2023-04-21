@@ -31,7 +31,7 @@ month_dict = {
 }
 
 for i in range(len(data)):
-    start_soc = data.loc[i, "start_soc"]
+    start_soc = float(data.loc[i, "start_soc"])
     # end_soc = data.loc[i, "end_soc"]
     end_soc = 0.95
     start_step = data.loc[i, "start_time_step_5_interval"]

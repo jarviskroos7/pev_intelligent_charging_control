@@ -4,7 +4,7 @@ import cvxpy as cp
 import pandas as pd
 from Basic_charging_agent import Basic_charging_agent
 
-class Navie_charing_agent(Basic_charging_agent):
+class Naive_charing_agent(Basic_charging_agent):
     def __init__(self):
         super().__init__()
 
@@ -66,8 +66,8 @@ class Navie_charing_agent(Basic_charging_agent):
 '''
 
 
-# n = Navie_charing_agent()
-# print(n.get_total_emission_value(144, 288, 0.216, 0.99))
+n = Naive_charing_agent()
+print(n.get_total_emission_value(144, 288, 0.216, 0.95, "winter"))
 
 # n = Navie_charing_agent()
 # print(n.get_total_emission_value(225, 253, 0.891, 0.99))
