@@ -1,7 +1,7 @@
 import pandas as pd
 
 from Smart_charging_method import Smart_charing_agent
-from naive_charing_method import Navie_charing_agent
+from naive_charing_method import Naive_charing_agent
 
 from Back_to_grid_method import Back_to_grid_charing_agent
 
@@ -30,7 +30,7 @@ month_dict = {
     'Dec': 12
 }
 
-for i in range(10):
+for i in range(1139,len(data)):
     start_soc = float(data.loc[i, "start_soc"])
     # end_soc = data.loc[i, "end_soc"]
     end_soc = 0.95

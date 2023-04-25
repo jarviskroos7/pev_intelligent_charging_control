@@ -41,3 +41,9 @@ class Basic_charging_agent():
 
     def set_Resistance(self, resistance):
         self.R = resistance
+
+# b = Basic_charging_agent()
+# x = [ i for i in range(len(b.summer_emission_array))]
+# plt.plot(x, b.summer_emission_array)
+# plt.xlabel()
+# plt.show()

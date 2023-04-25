@@ -10,6 +10,7 @@ class Naive_charing_agent(Basic_charging_agent):
 
     def check_validation(self,start_time, end_time, start_soc, end_soc):
         target_charge_volumn = (end_soc - start_soc) * self.battery_volumn
+        # print(target_charge_volumn)
         if target_charge_volumn > self.I_max * (end_time - start_time)*self.step:
             return False
         return True
@@ -30,12 +31,12 @@ class Naive_charing_agent(Basic_charging_agent):
             if self.R == 0:
                 current = power_limit / self.voltage
             else:
-                current = (-self.voltage + np.sqrt(self.voltage*self.voltage + 8*self.R*power_limit))/(4*self.R)
-
+                # current = (-self.voltage + np.sqrt(self.voltage*self.voltage + 4*self.R*power_limit))/(2*self.R)
+                current = power_limit/(self.voltage + self.R)
             if (current_soc + current * self.step / self.battery_volumn)> end_soc:
                 current = (end_soc - current_soc)*self.battery_volumn/self.step
 
-            temp_power = current * self.voltage + current**2*self.R
+            temp_power = current * self.voltage + current*self.R
             current_soc += current * self.step / self.battery_volumn
             if season == "summer":
                 emission_volume += temp_power * self.summer_emission_array[current_time]
@@ -66,8 +67,8 @@ class Naive_charing_agent(Basic_charging_agent):
 '''
 
 
-n = Naive_charing_agent()
-print(n.get_total_emission_value(144, 288, 0.216, 0.95, "winter"))
+# n = Naive_charing_agent()
+# print(n.get_total_emission_value(144, 288, 0.216, 0.95, "winter"))
 
 # n = Navie_charing_agent()
 # print(n.get_total_emission_value(225, 253, 0.891, 0.99))
