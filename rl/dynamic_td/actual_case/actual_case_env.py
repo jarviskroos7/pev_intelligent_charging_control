@@ -82,6 +82,7 @@ class Charge_env():
         if self.at_soc_limit(state) and action == -1:
             action = 0
 
+
         # discharging
         if action == -1:
             # delta_soc = roundSoc(
@@ -89,7 +90,7 @@ class Charge_env():
             #     )
             delta_soc = 0.02
             new_state[0] = state[0] + delta_soc
-            reward = self.price_curve[state[2]] * self.v2g_discount
+            # reward = self.price_curve[state[2]] * self.v2g_discount
         # charging
         elif action == 1:
             # delta_soc = roundSoc(
@@ -97,11 +98,11 @@ class Charge_env():
             #     )
             delta_soc = 0.02
             new_state[0] = state[0] - delta_soc
-            reward = -self.price_curve[state[2]]
+            # reward = -self.price_curve[state[2]]
         # do nothing
         elif action == 0:
             new_state[0] = state[0]
-            reward = 0
+            # reward = 0
         else:
             raise Exception('Invaid action!')
 
@@ -116,6 +117,17 @@ class Charge_env():
             raise Exception("delta time out of bound")
         if new_state[2] >= self.state_size_time:
             raise Exception("current time out of bound")
+
+
+        if new_state[0] == state[0] == 1:
+            action = 0
+
+        if action == -1:
+            reward = - action * self.price_curve[state[2]] * self.v2g_discount
+        elif action == 0:
+            reward = 0
+        else:
+            reward = - action * self.price_curve[state[2]]
 
         done = False
         if ((new_state[1] <= 0) or (new_state[2] >= self.state_size_time)):

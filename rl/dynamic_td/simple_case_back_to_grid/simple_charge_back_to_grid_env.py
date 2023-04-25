@@ -73,7 +73,7 @@ class Simple_charge_back_to_grid_env():
             raise Exception("current time out of bound")
 
         if new_state[0] == state[0] == 1:
-            action = 1
+            action = 0
 
         if action == -1:
             reward = - action * self.price_curve[state[2]] * 0.85
