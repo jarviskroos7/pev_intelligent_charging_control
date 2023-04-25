@@ -53,7 +53,7 @@ class Charge_env():
         self.soc_limit = 0.2
 
     def is_terminal(self, state):
-        if ((state[0] <= 0) or (state[1] <= 0) or (state[2] >= self.state_size_time - 1)):
+        if ((state[1] <= 0) or (state[2] >= self.state_size_time - 1)):
             return True
         return False
     
@@ -118,7 +118,7 @@ class Charge_env():
             raise Exception("current time out of bound")
 
         done = False
-        if ((new_state[0] <= 0) or (new_state[1] <= 0) or (new_state[2] >= self.state_size_time)):
+        if ((new_state[1] <= 0) or (new_state[2] >= self.state_size_time)):
             done = True
 
         return new_state, reward, done

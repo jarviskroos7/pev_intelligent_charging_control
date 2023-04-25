@@ -77,7 +77,7 @@ class Back_to_grid_charing_agent(Basic_charging_agent):
 
 
 # s = Back_to_grid_charing_agent()
-# s.set_Resistance(1000)
+# s.set_Resistance(36)
 # print(s.get_total_emission_value(144, 144+287, 0.2, 0.7,"winter"))
 #
 # s = Smart_charing_agent()
