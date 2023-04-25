@@ -6,9 +6,9 @@ from naive_charing_method import Naive_charing_agent
 from Back_to_grid_method import Back_to_grid_charing_agent
 
 back_to_grid_agent = Back_to_grid_charing_agent()
+
 back_to_grid_agent.set_Resistance(36)
 data = pd.read_csv("sessions_5_min_step.csv", index_col=0)
-
 
 print(len(data))
 session_pair = []
@@ -30,7 +30,8 @@ month_dict = {
     'Dec': 12
 }
 
-for i in range(1139,len(data)):
+
+for i in range(len(data)):
     start_soc = float(data.loc[i, "start_soc"])
     # end_soc = data.loc[i, "end_soc"]
     end_soc = 0.95
