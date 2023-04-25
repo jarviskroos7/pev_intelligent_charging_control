@@ -133,7 +133,7 @@ class Simple_charge_back_to_grid_env():
                 for m in range(int(self.state_size_time) - j):
                     i = np.round(i, 2)
                     index_i = self.get_index(i)
-                    value = np.min(values);
+                    value = np.min(values)
                     for k,a in enumerate(self.actions):
                         (next_i, next_j, next_m), reward, done = self.step([i, j, m], a)
                         next_index_i = self.get_index(next_i)
