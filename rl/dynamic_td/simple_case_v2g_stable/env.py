@@ -77,7 +77,7 @@ class simple_v2g_env():
             action = 1
 
         if action == 0:
-            reward = action * self.price_curve[state[2]] * 0.85
+            reward = self.price_curve[state[2]] * 0.85
         elif action == 1:
             reward = 0
         else:

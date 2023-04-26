@@ -79,10 +79,7 @@ class final_env():
         
     def step(self, state, action):
         if self.is_terminal(state):
-            # if state[0] > 0:
-            #     state, -state[0] * 20 * self.price_max_value, True
-            # else:
-            return state, -state[0] * 20 * self.price_max_value, True
+            return state, -state[0] * 200 * self.price_max_value, True
         
         new_state = [0, 0, 0]
 
@@ -90,8 +87,8 @@ class final_env():
         # new_state[0] = state[0] - self.action_current_list[action] * self.time_interval / 60 / self.battery_volume
 
         # do not discharge if SOC is at or below the SOC limit
-        # if self.at_soc_limit(state) and action == 0:
-        #     action = 1 # DO NOTHING
+        if self.at_soc_limit(state) and action == 0:
+            action = 1 # DO NOTHING
 
         # CHARGING
         if action == 2:
@@ -122,13 +119,13 @@ class final_env():
 
         # DISCHARGING
         if action == 0:
-            reward = action * self.price_curve[state[2]] * self.v2g_discount
+            reward = self.price_curve[state[2]] * self.v2g_discount
         # DO NOTHING
         elif action == 1:
             reward = 0
         # CHARGING
         else:
-            reward = - action * self.price_curve[state[2]]
+            reward = - self.price_curve[state[2]]
 
         new_state[0] = np.round(new_state[0], 2)
         done = False
@@ -181,7 +178,7 @@ class final_env():
                 for m in range(int(self.state_size_time) - j):
                     i = np.round(i, 2)
                     index_i = self.get_index(i)
-                    value = np.min(values);
+                    value = np.min(values)
                     for k,a in enumerate(self.actions):
                         (next_i, next_j, next_m), reward, done = self.step([i, j, m], a)
                         next_index_i = self.get_index(next_i)
