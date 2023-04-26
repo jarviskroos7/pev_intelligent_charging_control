@@ -25,4 +25,4 @@ if __name__ == '__main__':
         # greedy improvement
         policy = env.greedy_policy_parallel(values)
 
-    np.save(f'final_greedy_policy_iter{iter}x{iter_state_eval}', policy)
+    np.save(f'final_greedy_policy_terminal_cond_iter{iter}x{iter_state_eval}', policy)

@@ -77,11 +77,12 @@ class final_env():
         else:
             return False
         
-    def step(self,state, action):
+    def step(self, state, action):
         if self.is_terminal(state):
-            # if state[0] == 0:
-            #     return state, 0, True
-            return state, -state[0] * 10 * self.price_max_value, True
+            if state[0] > 0:
+                state, -state[0] * 20 * self.price_max_value, True
+            else:
+                return state, 0, True
         
         new_state = [0, 0, 0]
 
