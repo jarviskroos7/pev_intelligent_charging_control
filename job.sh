@@ -23,12 +23,12 @@
 
 ## Command(s) to run:
 # Move to root folder (this resolves the path binding issue)
-cd pev_intelligent_charging_control
 
 # Load environment
 module load python
 source activate bistro
-pip install -r requirements.txt
+# pip install -r requirements.txt
+pip install --user multiprocessing
 
 # Config
 export MAXRAM=96g

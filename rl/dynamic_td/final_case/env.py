@@ -22,7 +22,6 @@ est. convergence and optimal iterations =       ?
 est. time used for convergence =                ?
 """
 
-
 class final_env():
 
     def __init__(self):
