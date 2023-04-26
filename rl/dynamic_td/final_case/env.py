@@ -79,10 +79,10 @@ class final_env():
         
     def step(self, state, action):
         if self.is_terminal(state):
-            if state[0] > 0:
-                state, -state[0] * 20 * self.price_max_value, True
-            else:
-                return state, 0, True
+            # if state[0] > 0:
+            #     state, -state[0] * 20 * self.price_max_value, True
+            # else:
+            return state, -state[0] * 20 * self.price_max_value, True
         
         new_state = [0, 0, 0]
 
@@ -90,8 +90,8 @@ class final_env():
         # new_state[0] = state[0] - self.action_current_list[action] * self.time_interval / 60 / self.battery_volume
 
         # do not discharge if SOC is at or below the SOC limit
-        if self.at_soc_limit(state) and action == 0:
-            action = 1 # DO NOTHING
+        # if self.at_soc_limit(state) and action == 0:
+        #     action = 1 # DO NOTHING
 
         # CHARGING
         if action == 2:
