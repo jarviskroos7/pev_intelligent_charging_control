@@ -89,16 +89,14 @@ class actual_env():
             # delta_soc = roundSoc(
             #     self.I_max * self.charge_interval / 60 / self.battery_volume * self.loss_coefficient, 2
             #     )
-            delta_soc = 0.02
-            new_state[0] = state[0] + delta_soc
+            new_state[0] = state[0] + self.delta_soc_interval
             reward = self.price_curve[state[2]] * self.v2g_discount
         # charging
         elif action == 1:
             # delta_soc = roundSoc(
             #     self.I_max * self.charge_interval / 60 / self.battery_volume * self.loss_coefficient, 2
             #     )
-            delta_soc = 0.02
-            new_state[0] = state[0] - delta_soc
+            new_state[0] = state[0] - self.delta_soc_interval
             reward = -self.price_curve[state[2]]
         # do nothing
         elif action == 0:

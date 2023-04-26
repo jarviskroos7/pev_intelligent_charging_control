@@ -1,14 +1,15 @@
 import numpy as np
-from normal_case_env import Normal_env
-policy = np.load('Normal_greedy_policy_iter10.npy')
+from env import final_env
+policy = np.load('final_greedy_policy_iter20x40.npy')
 
 
 # state = [0.8, 47,0]
 # state = [0.28, 47,0]
-state = [0.5, 47,0]
+state = [0.8, 119, 20]
 # state = [0.28, 47,0]
 done = False
-charge_env = Normal_env()
+charge_env = final_env()
+
 action_history = [None]*charge_env.state_size_time
 while not done:
     state_0_index = charge_env.get_index(state[0])

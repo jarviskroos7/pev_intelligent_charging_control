@@ -28,7 +28,7 @@
 module load python
 source activate bistro
 # pip install -r requirements.txt
-pip install --user multiprocessing
+# pip install --user multiprocessing
 
 # Config
 export MAXRAM=96g

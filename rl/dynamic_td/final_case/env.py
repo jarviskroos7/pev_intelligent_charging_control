@@ -42,11 +42,11 @@ class final_env():
         # positive_current_list =  np.linspace( 0, self.I_max, int((self.action_size+1)/2))
         # self.action_current_list = np.concatenate((negative_current_list[:-1], positive_current_list))
 
-        self.charge_interval = 12                                                                   # min
+        self.time_interval = 12                                                                   # min
         self.delta_soc_interval = 0.02                                                              # 40*12/60*0.85/333.333 = 0.0204 * 100 ~= 2%
         self.state_size_delta_soc = int(1 / self.delta_soc_interval) + 1
-        self.state_size_delta_time = int(1440 / self.charge_interval)
-        self.state_size_time = int(1440 / self.charge_interval * 2)
+        self.state_size_delta_time = int(1440 / self.time_interval)
+        self.state_size_time = int(1440 / self.time_interval * 2)
 
         self.price_curve = pd.read_csv('../../../data/price_day_idx_12min.csv')['price'].values     # $/kWh
         self.price_curve = np.concatenate((self.price_curve, self.price_curve), axis=0)
@@ -86,10 +86,10 @@ class final_env():
         new_state = [0, 0, 0]
 
         # for variable current
-        # new_state[0] = state[0] - self.action_current_list[action] * self.charge_interval / 60 / self.battery_volume
+        # new_state[0] = state[0] - self.action_current_list[action] * self.time_interval / 60 / self.battery_volume
 
         # do not discharge if SOC is at or below the SOC limit
-        if self.at_soc_limit(state) and action == -1:
+        if self.at_soc_limit(state) and action == 0:
             action = 1 # DO NOTHING
 
         # CHARGING
@@ -121,7 +121,7 @@ class final_env():
 
         # DISCHARGING
         if action == 0:
-            reward = action * self.price_curve[state[2]] * 0.8
+            reward = action * self.price_curve[state[2]] * self.v2g_discount
         # DO NOTHING
         elif action == 1:
             reward = 0
