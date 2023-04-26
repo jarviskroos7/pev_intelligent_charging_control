@@ -42,8 +42,8 @@ class final_env():
         # positive_current_list =  np.linspace( 0, self.I_max, int((self.action_size+1)/2))
         # self.action_current_list = np.concatenate((negative_current_list[:-1], positive_current_list))
 
-        self.time_interval = 12                                                                   # min
-        self.delta_soc_interval = 0.02                                                              # 40*12/60*0.85/333.333 = 0.0204 * 100 ~= 2%
+        self.time_interval = 24                                                                     # min
+        self.delta_soc_interval = 0.04                                                              # 40*12/60*0.85/333.333 = 0.0204 * 100 ~= 2%
         self.state_size_delta_soc = int(1 / self.delta_soc_interval) + 1
         self.state_size_delta_time = int(1440 / self.time_interval)
         self.state_size_time = int(1440 / self.time_interval * 2)

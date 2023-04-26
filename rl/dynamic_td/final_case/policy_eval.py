@@ -7,8 +7,8 @@ if __name__ == '__main__':
     
     mp.freeze_support()
     env = final_env()
-    iter = 20
-    iter_state_eval = 40
+    iter = 10
+    iter_state_eval = 59
 
     policy = env.actions_prob * np.ones((env.state_size_delta_soc, env.state_size_delta_time, env.state_size_time, env.action_size))
     # policy = np.load('simple_greedy_policy_iter20x40.npy')
@@ -24,5 +24,8 @@ if __name__ == '__main__':
         
         # greedy improvement
         policy = env.greedy_policy_parallel(values)
+        if i % 5 == 0:
+            np.save(f'final_greedy_policy_no_soc_limit_iter{iter}x{iter_state_eval}', policy)
+
 
     np.save(f'final_greedy_policy_no_soc_limit_iter{iter}x{iter_state_eval}', policy)

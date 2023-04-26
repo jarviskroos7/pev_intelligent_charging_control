@@ -81,7 +81,7 @@ class simple_v2g_env():
         elif action == 1:
             reward = 0
         else:
-            reward = - action * self.price_curve[state[2]]
+            reward = - self.price_curve[state[2]]
 
         new_state[0] = np.round(new_state[0], 2)
         done = False
