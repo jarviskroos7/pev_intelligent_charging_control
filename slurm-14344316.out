@@ -1,0 +1,62 @@
+/var/spool/slurmd/job14344316/slurm_script: line 26: cd: pev_intelligent_charging_control: No such file or directory
+Defaulting to user installation because normal site-packages is not writeable
+Requirement already satisfied: numpy in /global/scratch/users/jarviskroos7/.local/lib/python3.9/site-packages (from -r requirements.txt (line 1)) (1.22.2)
+Requirement already satisfied: pandas in /global/scratch/users/jarviskroos7/.local/lib/python3.9/site-packages (from -r requirements.txt (line 2)) (1.4.0)
+Requirement already satisfied: tqdm in /global/software/sl-7.x86_64/modules/langs/python/3.9/lib/python3.9/site-packages (from -r requirements.txt (line 3)) (4.64.1)
+Collecting multiprocessing
+  Downloading multiprocessing-2.6.2.1.tar.gz (108 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 108.0/108.0 kB 2.7 MB/s eta 0:00:00
+  Preparing metadata (setup.py): started
+  Preparing metadata (setup.py): finished with status 'error'
+  error: subprocess-exited-with-error
+  
+  × python setup.py egg_info did not run successfully.
+  │ exit code: 1
+  ╰─> [7 lines of output]
+      Traceback (most recent call last):
+        File "<string>", line 2, in <module>
+        File "<pip-setuptools-caller>", line 34, in <module>
+        File "/tmp/pip-install-w36haqqv/multiprocessing_5c7fbf0d4e4f42d1a886ee1c1caf665a/setup.py", line 94
+          print 'Macros:'
+                ^
+      SyntaxError: Missing parentheses in call to 'print'. Did you mean print('Macros:')?
+      [end of output]
+  
+  note: This error originates from a subprocess, and is likely not a problem with pip.
+error: metadata-generation-failed
+
+× Encountered error while generating package metadata.
+╰─> See above for output.
+
+note: This is an issue with the package mentioned above, not pip.
+hint: See above for details.
+  0%|          | 0/20 [00:00<?, ?it/s]state-value iteration 1 time = 15.55 s
+state-value iteration 2 time = 15.54 s
+state-value iteration 3 time = 15.91 s
+state-value iteration 4 time = 15.02 s
+state-value iteration 5 time = 15.48 s
+state-value iteration 6 time = 15.26 s
+state-value iteration 7 time = 15.37 s
+state-value iteration 8 time = 15.0 s
+state-value iteration 9 time = 15.6 s
+state-value iteration 10 time = 15.06 s
+state-value iteration 11 time = 15.63 s
+state-value iteration 12 time = 15.32 s
+state-value iteration 13 time = 15.59 s
+state-value iteration 14 time = 15.33 s
+state-value iteration 15 time = 15.74 s
+state-value iteration 16 time = 15.22 s
+state-value iteration 17 time = 15.39 s
+state-value iteration 18 time = 15.23 s
+state-value iteration 19 time = 15.71 s
+state-value iteration 20 time = 15.22 s
+state-value iteration 21 time = 15.72 s
+state-value iteration 22 time = 15.33 s
+state-value iteration 23 time = 15.07 s
+state-value iteration 24 time = 15.44 s
+state-value iteration 25 time = 15.39 s
+state-value iteration 26 time = 15.26 s
+state-value iteration 27 time = 15.54 s
+state-value iteration 28 time = 15.21 s
+state-value iteration 29 time = 15.65 s
+state-value iteration 30 time = 15.2 s
