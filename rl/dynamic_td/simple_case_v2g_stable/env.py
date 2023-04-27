@@ -19,9 +19,10 @@ class simple_v2g_env():
         positive_current_list =  np.linspace( 0, self.I_max, int((self.action_size+1)/2))
         self.action_current_list = np.concatenate((negative_current_list[:-1], positive_current_list))
 
-        self.charge_interval = 30
-
-        self.delta_soc_interval = 0.1
+        # self.charge_interval = 30
+        # self.delta_soc_interval = 0.1
+        self.time_interval = 24                                                                     # min
+        self.delta_soc_interval = 0.04
         self.state_size_delta_soc = int(1 / self.delta_soc_interval) + 1
         self.state_size_delta_time = int(1440 / self.charge_interval)
         self.state_size_time = int(1440 / self.charge_interval * 2)

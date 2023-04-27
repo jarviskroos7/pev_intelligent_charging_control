@@ -24,8 +24,8 @@ if __name__ == '__main__':
         
         # greedy improvement
         policy = env.greedy_policy_parallel(values)
-        if i % 5 == 0:
-            np.save(f'final_greedy_policy_no_soc_limit_iter{iter}x{iter_state_eval}', policy)
+        # if i % 5 == 0:
+        #     np.save(f'final_greedy_policy_no_soc_limit_iter{i}x{iter_state_eval}', policy)
 
 
     np.save(f'final_greedy_policy_no_soc_limit_iter{iter}x{iter_state_eval}', policy)

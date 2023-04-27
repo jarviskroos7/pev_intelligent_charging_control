@@ -48,7 +48,8 @@ class final_env():
         self.state_size_delta_time = int(1440 / self.time_interval)
         self.state_size_time = int(1440 / self.time_interval * 2)
 
-        self.price_curve = pd.read_csv('../../../data/price_day_idx_12min.csv')['price'].values     # $/kWh
+        # self.price_curve = pd.read_csv('../../../data/price_day_idx_12min.csv')['price'].values     # $/kWh
+        self.price_curve = pd.read_csv('../../../data/price_day_idx_24min.csv')['price'].values     # $/kWh
         self.price_curve = np.concatenate((self.price_curve, self.price_curve), axis=0)
         self.price_max_value = max(self.price_curve)
         self.loss_coefficient = 0.85
@@ -71,8 +72,7 @@ class final_env():
 
     def at_soc_limit(self, state):
         if state[0] >= 1 - self.soc_limit:
-            # deltaSoc >= 0.8
-            # battery is at or below a set SOC limit
+            # deltaSoc >= 0.8 battery is at or below a set SOC limit
             return True
         else:
             return False
@@ -85,10 +85,6 @@ class final_env():
 
         # for variable current
         # new_state[0] = state[0] - self.action_current_list[action] * self.time_interval / 60 / self.battery_volume
-
-        # do not discharge if SOC is at or below the SOC limit
-        if self.at_soc_limit(state) and action == 0:
-            action = 1 # DO NOTHING
 
         # CHARGING
         if action == 2:
@@ -119,6 +115,10 @@ class final_env():
 
         # DISCHARGING
         if action == 0:
+            # penalize discharging if SOC is at or below the SOC limit
+            # if self.at_soc_limit(state):
+            #     reward = -10
+            # else:
             reward = self.price_curve[state[2]] * self.v2g_discount
         # DO NOTHING
         elif action == 1:

@@ -1,11 +1,11 @@
 import numpy as np
 from env import final_env
-policy = np.load('final_greedy_policy_iter20x40.npy')
+policy = np.load('final_greedy_policy_no_soc_limit_iter10x59.npy')
 
 
 # state = [0.8, 47,0]
 # state = [0.28, 47,0]
-state = [0.8, 119, 20]
+state = [0.8, 5, 0]
 # state = [0.28, 47,0]
 done = False
 charge_env = final_env()
