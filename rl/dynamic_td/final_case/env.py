@@ -42,13 +42,13 @@ class final_env():
         # positive_current_list =  np.linspace( 0, self.I_max, int((self.action_size+1)/2))
         # self.action_current_list = np.concatenate((negative_current_list[:-1], positive_current_list))
 
-        self.time_interval = 24                                                                     # min
-        self.delta_soc_interval = 0.04                                                              # 40*12/60*0.85/333.333 = 0.0204 * 100 ~= 2%
+        self.time_interval = 12                                                                     # min
+        self.delta_soc_interval = 0.02                                                              # 40*12/60*0.85/333.333 = 0.0204 * 100 ~= 2%
         self.state_size_delta_soc = int(1 / self.delta_soc_interval) + 1
         self.state_size_delta_time = int(1440 / self.time_interval)
         self.state_size_time = int(1440 / self.time_interval * 2)
 
-        self.price_curve = pd.read_csv('../../../data/price_day_idx_24min.csv')['price'].values     # $/kWh
+        self.price_curve = pd.read_csv('../../../data/price_day_idx_12min.csv')['price'].values     # $/kWh
         self.price_curve = np.concatenate((self.price_curve, self.price_curve), axis=0)
         self.price_max_value = max(self.price_curve)
         self.loss_coefficient = 0.85
