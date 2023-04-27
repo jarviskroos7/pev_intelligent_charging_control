@@ -48,7 +48,6 @@ class final_env():
         self.state_size_delta_time = int(1440 / self.time_interval)
         self.state_size_time = int(1440 / self.time_interval * 2)
 
-        # self.price_curve = pd.read_csv('../../../data/price_day_idx_12min.csv')['price'].values     # $/kWh
         self.price_curve = pd.read_csv('../../../data/price_day_idx_24min.csv')['price'].values     # $/kWh
         self.price_curve = np.concatenate((self.price_curve, self.price_curve), axis=0)
         self.price_max_value = max(self.price_curve)
@@ -110,22 +109,26 @@ class final_env():
         if new_state[2] >= self.state_size_time:
             raise Exception("current time out of bound")
 
-        if np.round(new_state[0], 2) == np.round(state[0], 2):
-            action = 1
+        # if np.round(new_state[0], 2) == np.round(state[0], 2):
+        #     action = 1
 
         # DISCHARGING
         if action == 0:
             # penalize discharging if SOC is at or below the SOC limit
-            # if self.at_soc_limit(state):
-            #     reward = -10
-            # else:
-            reward = self.price_curve[state[2]] * self.v2g_discount
+            if self.at_soc_limit(state):
+                reward = -100
+            else:
+                reward = self.price_curve[state[2]] * self.v2g_discount
         # DO NOTHING
         elif action == 1:
             reward = 0
         # CHARGING
         else:
-            reward = - self.price_curve[state[2]]
+            # penalize overcharging
+            if np.round(new_state[0], 2) == np.round(state[0], 2):
+                reward = -100
+            else:
+                reward = - self.price_curve[state[2]]
 
         new_state[0] = np.round(new_state[0], 2)
         done = False
@@ -137,7 +140,7 @@ class final_env():
         index = int(np.round(state / self.delta_soc_interval))
         return index
 
-    def compute_state_value(self,max_iter, discount, policy):
+    def compute_state_value(self, max_iter, discount, policy):
         new_state_values = np.zeros((self.state_size_delta_soc, self.state_size_delta_time, self.state_size_time))
         iteration = 0
 
@@ -164,15 +167,15 @@ class final_env():
 
             iteration += 1
             t2 = time.time()
-            # print(t2 - t1)
+            print(f'state-value iteration {iteration} time =', round(t2 - t1, 2), 's')
         return new_state_values, iteration
 
-    def greedy_Policy(self,values,discount = 1):
+    def greedy_Policy(self, values, discount = 1):
         new_state_values = values
         policy = np.zeros((self.state_size_delta_soc, self.state_size_delta_time, self.state_size_time, self.action_size))
 
         state_values = new_state_values.copy()
-
+        t1 = time.time()
         for i in np.linspace(0, 1, self.state_size_delta_soc):
             for j in range((int(self.state_size_delta_time))):
                 for m in range(int(self.state_size_time) - j):
@@ -189,7 +192,8 @@ class final_env():
 
 
                     policy[index_i,j,m,actionind] = 1
-
+        t2 = time.time()
+        print(f'greedy policy evaluation time =', round(t2 - t1, 2), 's')
         return policy
     
     def state_value_parallel_loop(self, args):

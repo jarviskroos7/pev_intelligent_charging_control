@@ -21,11 +21,13 @@ class simple_v2g_env():
 
         # self.charge_interval = 30
         # self.delta_soc_interval = 0.1
-        self.time_interval = 24                                                                     # min
-        self.delta_soc_interval = 0.04
+        # self.time_interval = 24                                                                     # min
+        # self.delta_soc_interval = 0.04
+        self.time_interval = 30                                                                     # min
+        self.delta_soc_interval = 0.1
         self.state_size_delta_soc = int(1 / self.delta_soc_interval) + 1
-        self.state_size_delta_time = int(1440 / self.charge_interval)
-        self.state_size_time = int(1440 / self.charge_interval * 2)
+        self.state_size_delta_time = int(1440 / self.time_interval)
+        self.state_size_time = int(1440 / self.time_interval * 2)
 
         self.price_max_value = 1
         x = np.linspace(0, int(self.state_size_delta_time) - 1, int(self.state_size_delta_time))
@@ -78,7 +80,7 @@ class simple_v2g_env():
             action = 1
 
         if action == 0:
-            reward = self.price_curve[state[2]] * 0.85
+            reward = action * self.price_curve[state[2]] * 0.85
         elif action == 1:
             reward = 0
         else:
@@ -124,7 +126,7 @@ class simple_v2g_env():
             # print(t2 - t1)
         return new_state_values, iteration
 
-    def greedy_Policy(self,values,discount = 1):
+    def greedy_Policy(self, values, discount = 1):
         new_state_values = values
         policy = np.zeros((self.state_size_delta_soc, self.state_size_delta_time, self.state_size_time, self.action_size))
 

@@ -1,6 +1,6 @@
 import numpy as np
 from env import simple_v2g_env
-policy = np.load('simple_greedy_policy_iter10.npy')
+policy = np.load('simple_greedy_policy_iter20x40 copy.npy')
 
 
 # state = [0.8, 47,0]
