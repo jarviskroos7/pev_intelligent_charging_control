@@ -2,7 +2,6 @@ import numpy as np
 from env import final_env
 policy = np.load('final_greedy_policy_12min_charging_limit_iter5x120.npy')
 
-
 # state = [0.8, 47,0]
 # state = [0.28, 47,0]
 state = [0.8, 119, 0]
@@ -69,5 +68,5 @@ print("======= Baseline Policy: ========")
 print("Total energyCharged cost = $", baseline_cost)
 
 print()
-print("========= Evaluation : ==========")
+print("========= Evaluation: ===========")
 print("Charging Cost saved = $", round(opt_cost - baseline_cost, 3), ",", round((opt_cost - baseline_cost) / baseline_cost * 100, 3), "%")

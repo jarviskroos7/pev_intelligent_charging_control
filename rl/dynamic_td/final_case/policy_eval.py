@@ -10,10 +10,16 @@ if __name__ == '__main__':
     iter = 5
     iter_state_eval = 120
 
-    policy = env.actions_prob * np.ones((env.state_size_delta_soc, env.state_size_delta_time, env.state_size_time, env.action_size))
-    # policy = np.load('simple_greedy_policy_iter20x40.npy')
+    policy = env.actions_prob * np.ones(
+        (env.state_size_delta_soc, 
+         env.state_size_delta_time, 
+         env.state_size_time, env.action_size)
+        )
+    
+    # continue q value evaluation
+    # policy = np.load('policy/iter5x120-highSOC_penalty_large.npy')
 
-    for i in tqdm(range(iter)):
+    for i in tqdm(np.arange(0, 0+iter)):
 
         # evaluation
         values, sync_iteration = env.compute_state_value(
@@ -24,7 +30,6 @@ if __name__ == '__main__':
         
         # greedy improvement
         policy = env.greedy_Policy(values)
-        if i % 2 == 0:
-            np.save(f'final_greedy_policy_charging_limit_iter{i}x{iter_state_eval}', policy)
+        np.save(f'policy/iter{i}x{iter_state_eval}-highSOC_penalty_large', policy)
 
-    np.save(f'final_greedy_policy_12min_charging_limit_iter{iter}x{iter_state_eval}', policy)
+    np.save(f'policy/iter{i}x{iter_state_eval}-highSOC_penalty_large', policy)

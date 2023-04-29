@@ -25,7 +25,8 @@ est. time used for convergence =                ?
 class final_env():
 
     def __init__(self):
-
+        
+        # BATTERY
         self.voltage = 240                                                                          # V
         self.battery_capacity = 80                                                                  # kWh
         self.battery_volume = self.battery_capacity * 1000 / self.voltage                           # Ah
@@ -34,6 +35,7 @@ class final_env():
         self.power_boundary_decrease_point = 0.8
         self.I_max = self.power_boundary / self.voltage                                             # 40A
 
+        # ACTION SPACE
         self.action_size = 3
         self.actions_prob = 1 / self.action_size
         self.actions = [i for i in range(self.action_size)]                                         # V2G
@@ -42,18 +44,25 @@ class final_env():
         # positive_current_list =  np.linspace( 0, self.I_max, int((self.action_size+1)/2))
         # self.action_current_list = np.concatenate((negative_current_list[:-1], positive_current_list))
 
+        # TIME and DELTA_SOC
         self.time_interval = 12                                                                     # min
         self.delta_soc_interval = 0.02                                                              # 40*12/60*0.85/333.333 = 0.0204 * 100 ~= 2%
         self.state_size_delta_soc = int(1 / self.delta_soc_interval) + 1
         self.state_size_delta_time = int(1440 / self.time_interval)
         self.state_size_time = int(1440 / self.time_interval * 2)
 
+        # PRICE
         self.price_curve = pd.read_csv('../../../data/price_day_idx_12min.csv')['price'].values     # $/kWh
         self.price_curve = np.concatenate((self.price_curve, self.price_curve), axis=0)
         self.price_max_value = max(self.price_curve)
         self.loss_coefficient = 0.85
         self.v2g_discount = 0.8
-        self.soc_limit = 0.2
+
+        # SOC
+        self.soc_lb = 0.2                                                                           # low SOC constraint
+        self.soc_mid_range_ub = 0.75                                                                # does not penalize charging when SOC is in this region
+        self.soc_mid_range_lb = 0.65
+        self.high_soc_penalty = 100                                                                   # $1/12min
 
         # self.price_max_value = 1
         # x = np.linspace(0, int(self.state_size_delta_time) - 1, int(self.state_size_delta_time))
@@ -70,20 +79,46 @@ class final_env():
         return False
 
     def at_soc_limit(self, state):
-        if state[0] >= 1 - self.soc_limit:
+        if state[0] >= 1 - self.soc_lb:
             # deltaSoc >= 0.8 battery is at or below a set SOC limit
             return True
         else:
             return False
+    
+    def penalize_charging(self, state):
+        
+        # num steps needed to reach SOC target
+        T_to_soc_target = state[0] / self.delta_soc_interval
+
+        # if time^1.3 needed to reach 100% is smaller than time remaining 
+        # --> reached a relative highSOC early, then slightly penalize if CHARGING
+
+        # 1st level:
+        # --> discourages charging to a relative high SOC then discharge when deltaT is high
+        # 2nd level:
+        # only penalize charging when SOC <= 65% OR SOC >= 75%
+        # --> encourage V2G operation in this bandwitdth
+
+        # GOAL: to minimize stress on the high-voltage battery, therefore minimize degradation
+
+        return (T_to_soc_target**1.3 < state[1]) & \
+            (state[0] <= 1-self.soc_mid_range_ub or state[0] >= 1-self.soc_mid_range_lb)
+        
         
     def step(self, state, action):
+
+        # STATE = [deltaSOC, deltaT, t]
+
         if self.is_terminal(state):
+            # penalize if deltaSoc > 0 when the deltaT is 0
             return state, -state[0] * 200 * self.price_max_value, True
         
         new_state = [0, 0, 0]
 
         # for variable current
         # new_state[0] = state[0] - self.action_current_list[action] * self.time_interval / 60 / self.battery_volume
+
+        # STATE TRANSITION
 
         # CHARGING
         if action == 2:
@@ -112,9 +147,11 @@ class final_env():
         # if np.round(new_state[0], 2) == np.round(state[0], 2):
         #     action = 1
 
+        # REWARD DEFINITION
+
         # DISCHARGING
         if action == 0:
-            # penalize discharging if SOC is at or below the SOC limit
+            # penalize discharging if SOC is at or below the SOC protection limit
             if self.at_soc_limit(state):
                 reward = -100
             else:
@@ -124,9 +161,11 @@ class final_env():
             reward = 0
         # CHARGING
         else:
-            # penalize overcharging
+            # overcharging constraint, maxSOC=1
             if np.round(new_state[0], 2) == np.round(state[0], 2):
                 reward = -100
+            elif self.penalize_charging(state):
+                reward = - self.price_curve[state[2]] - self.high_soc_penalty
             else:
                 reward = - self.price_curve[state[2]]
 
@@ -167,7 +206,7 @@ class final_env():
 
             iteration += 1
             t2 = time.time()
-            print(f'state-value iteration {iteration} time =', round(t2 - t1, 2), 's')
+            print(f'state-value iteration {iteration}, time =', round(t2 - t1, 2), 's')
         return new_state_values, iteration
 
     def greedy_Policy(self, values, discount = 1):
@@ -193,7 +232,7 @@ class final_env():
 
                     policy[index_i,j,m,actionind] = 1
         t2 = time.time()
-        print(f'greedy policy evaluation time =', round(t2 - t1, 2), 's')
+        print(f'greedy policy evaluation, time =', round(t2 - t1, 2), 's')
         return policy
     
     def state_value_parallel_loop(self, args):
@@ -229,7 +268,7 @@ class final_env():
 
             iteration += 1
             t2 = time.time()
-            print(f'state-value iteration {iteration} time =', round(t2 - t1, 2), 's')
+            print(f'state-value iteration {iteration}, time =', round(t2 - t1, 2), 's')
         
         return new_state_values, iteration
     
