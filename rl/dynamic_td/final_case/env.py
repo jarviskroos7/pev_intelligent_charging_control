@@ -39,10 +39,6 @@ class final_env():
         self.action_size = 3
         self.actions_prob = 1 / self.action_size
         self.actions = [i for i in range(self.action_size)]                                         # V2G
-        
-        # negative_current_list  = np.linspace(-self.I_max, 0, int((self.action_size+1)/2))
-        # positive_current_list =  np.linspace( 0, self.I_max, int((self.action_size+1)/2))
-        # self.action_current_list = np.concatenate((negative_current_list[:-1], positive_current_list))
 
         # TIME and DELTA_SOC
         self.time_interval = 12                                                                     # min
@@ -62,13 +58,7 @@ class final_env():
         self.soc_lb = 0.2                                                                           # low SOC constraint
         self.soc_mid_range_ub = 0.75                                                                # does not penalize charging when SOC is in this region
         self.soc_mid_range_lb = 0.65
-        self.high_soc_penalty = 100                                                                   # $1/12min
-
-        # self.price_max_value = 1
-        # x = np.linspace(0, int(self.state_size_delta_time) - 1, int(self.state_size_delta_time))
-        # price_curve = self.price_max_value / ((self.state_size_delta_time / 2) ** 2) * (x - (self.state_size_delta_time / 2)) ** 2
-        # self.price_curve = np.concatenate((price_curve, price_curve), axis=0)
-        # self.loss_coefficient = 0.85
+        self.high_soc_penalty = 100                                                                 # $/12min, [small, large] = [1, 100]
 
     def is_terminal(self, state):
         # if ((state[0] <= 0) or (state[1] <= 0) or (state[2] >= self.state_size_time - 1)):
@@ -89,17 +79,18 @@ class final_env():
         
         # num steps needed to reach SOC target
         T_to_soc_target = state[0] / self.delta_soc_interval
+        """
+        if time^1.3 needed to reach 100% is smaller than time remaining 
+        --> reached a relative highSOC early, then slightly penalize if CHARGING
 
-        # if time^1.3 needed to reach 100% is smaller than time remaining 
-        # --> reached a relative highSOC early, then slightly penalize if CHARGING
+        1st level:
+        --> discourages charging to a relative high SOC then discharge when deltaT is high
+        2nd level:
+        only penalize charging when SOC <= 65% OR SOC >= 75%
+        --> encourage V2G operation in this bandwitdth
 
-        # 1st level:
-        # --> discourages charging to a relative high SOC then discharge when deltaT is high
-        # 2nd level:
-        # only penalize charging when SOC <= 65% OR SOC >= 75%
-        # --> encourage V2G operation in this bandwitdth
-
-        # GOAL: to minimize stress on the high-voltage battery, therefore minimize degradation
+        GOAL: to minimize stress on the high-voltage battery, therefore minimize degradation
+        """
 
         return (T_to_soc_target**1.3 < state[1]) & \
             (state[0] <= 1-self.soc_mid_range_ub or state[0] >= 1-self.soc_mid_range_lb)
@@ -107,7 +98,9 @@ class final_env():
         
     def step(self, state, action):
 
-        # STATE = [deltaSOC, deltaT, t]
+        """
+        STATE = [deltaSOC, deltaT, t]
+        """
 
         if self.is_terminal(state):
             # penalize if deltaSoc > 0 when the deltaT is 0

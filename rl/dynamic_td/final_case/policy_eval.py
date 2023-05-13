@@ -17,9 +17,9 @@ if __name__ == '__main__':
         )
     
     # continue q value evaluation
-    # policy = np.load('policy/iter5x120-highSOC_penalty_large.npy')
+    policy = np.load('policy/iter4x120-highSOC_penalty_large.npy')
 
-    for i in tqdm(np.arange(0, 0+iter)):
+    for i in tqdm(np.arange(5, 5+iter)):
 
         # evaluation
         values, sync_iteration = env.compute_state_value(
